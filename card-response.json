@@ -7,7 +7,7 @@
         {
           "label": "Campus Location",
           "dataType": "STRING",
-          "value": "${properties.campus_location}"
+          "value": "${properties.campus_location_ca}"
         }
       ],
       "actions": [
