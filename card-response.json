@@ -1,0 +1,24 @@
+{
+  "results": [
+    {
+      "objectId": 1,
+      "title": "Campus Calendar",
+      "properties": [
+        {
+          "label": "Campus Location",
+          "dataType": "STRING",
+          "value": "${properties.campus_location}"
+        }
+      ],
+      "actions": [
+        {
+          "type": "IFRAME",
+          "width": 890,
+          "height": 748,
+          "uri": "https://YOUR-GITHUB-USERNAME.github.io/hubspot-campus-calendars/redirect.html?campus=${properties.campus_location}",
+          "label": "View Calendar"
+        }
+      ]
+    }
+  ]
+}
