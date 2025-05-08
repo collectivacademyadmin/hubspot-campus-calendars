@@ -1,134 +1,135 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Redirecting to Campus Calendar</title>
+  <title>Campus Calendar Redirect</title>
   <script>
+    // Function to extract parameters from URL
+    function getUrlParameter(name) {
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+      var results = regex.exec(location.search);
+      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
     // Main function to handle redirection
     async function redirectToCalendar() {
       try {
-        // Extract campus location from URL query string
-        const queryString = window.location.search || document.referrer.split('?')[1] || '';
-        const urlParams = new URLSearchParams('?' + queryString);
+        // Get campus location from URL
+        let campusLocation = getUrlParameter('campus_location_ca');
         
-        // Try different parameter names that might contain campus location
-        let campusLocation = urlParams.get('campus') || 
-                             urlParams.get('campus_location_ca') || 
-                             '';
+        // Show what we found for debugging
+        document.getElementById('debug-info').innerHTML = 
+          `<p><strong>Extracted campus:</strong> "${campusLocation}"</p>
+           <p><strong>URL:</strong> ${window.location.href}</p>`;
         
-        // If not found directly, try to extract from the full URL
-        if (!campusLocation && (window.location.href.includes('campus_location_ca=') || 
-                               document.referrer.includes('campus_location_ca='))) {
-          const fullUrl = window.location.href || document.referrer || '';
-          const match = fullUrl.match(/campus_location_ca=([^&]+)/);
-          if (match) {
-            campusLocation = decodeURIComponent(match[1].replace(/\+/g, ' '));
-          }
+        // Check if we need to decode it again (sometimes + isn't properly decoded)
+        if (campusLocation.includes('+')) {
+          campusLocation = campusLocation.replace(/\+/g, ' ');
+          document.getElementById('debug-info').innerHTML += 
+            `<p><strong>After replacing + with space:</strong> "${campusLocation}"</p>`;
         }
         
-        // Log for debugging
-        console.log("Detected campus:", campusLocation);
-        console.log("Full URL:", window.location.href);
-        console.log("Referrer:", document.referrer);
-        
-        // Show what we found
-        document.getElementById('debug').innerHTML = 
-          `<p>Found campus: "${campusLocation}"</p>
-           <p>Full URL: ${window.location.href}</p>`;
-        
-        // Fetch the JSON mapping file
+        // Load the campus calendars mapping
         const response = await fetch('https://collectivacademyadmin.github.io/hubspot-campus-calendars/campus-calendars.json');
         const data = await response.json();
         
-        // Log the available locations
-        console.log("Available locations:", Object.keys(data.locations));
-        document.getElementById('debug').innerHTML += 
-          `<p>Available locations: ${JSON.stringify(Object.keys(data.locations))}</p>`;
+        // Show available locations for debugging
+        document.getElementById('debug-info').innerHTML += 
+          `<p><strong>Available locations:</strong> ${Object.keys(data.locations).join(', ')}</p>`;
         
-        // Look up the calendar link for this campus
-        if (campusLocation && data.locations[campusLocation]) {
+        // Try to find an exact match
+        if (data.locations[campusLocation]) {
           const calendarInfo = data.locations[campusLocation];
-          document.getElementById('debug').innerHTML += 
-            `<p>Found match! Redirecting to: ${calendarInfo.name}</p>`;
-            
-          // Redirect to the calendar
+          document.getElementById('status').textContent = `Found exact match! Redirecting to ${calendarInfo.name}...`;
+          
+          // Open calendar in new tab
           window.open(calendarInfo.link, '_blank');
           
-          // Close the iframe after 3 seconds
-          setTimeout(function() {
-            window.parent.postMessage(JSON.stringify({ "action": "DONE" }), "*");
-          }, 3000);
-        } else {
-          // Try partial matching as a fallback
-          let matchFound = false;
+          // Close iframe after 2 seconds
+          setTimeout(() => {
+            window.parent.postMessage(JSON.stringify({"action": "DONE"}), "*");
+          }, 2000);
+          return;
+        }
+        
+        // If no exact match, try partial matching (just the city name)
+        if (campusLocation.includes(',')) {
+          const cityName = campusLocation.split(',')[0].trim();
+          document.getElementById('debug-info').innerHTML += 
+            `<p><strong>Trying city name match with:</strong> "${cityName}"</p>`;
+            
+          // Look for partial matches
           for (const [location, info] of Object.entries(data.locations)) {
-            if (campusLocation && location.includes(campusLocation.split(',')[0])) {
-              document.getElementById('debug').innerHTML += 
-                `<p>Found partial match: ${location}</p>`;
+            if (location.startsWith(cityName)) {
+              document.getElementById('status').textContent = 
+                `Found match by city name! Redirecting to ${info.name}...`;
               
-              // Redirect to the calendar
+              // Open calendar in new tab
               window.open(info.link, '_blank');
               
-              // Close the iframe after 3 seconds
-              setTimeout(function() {
-                window.parent.postMessage(JSON.stringify({ "action": "DONE" }), "*");
-              }, 3000);
-              
-              matchFound = true;
-              break;
+              // Close iframe after 2 seconds
+              setTimeout(() => {
+                window.parent.postMessage(JSON.stringify({"action": "DONE"}), "*");
+              }, 2000);
+              return;
             }
           }
-          
-          if (!matchFound) {
-            // Show error with helpful information
-            document.getElementById('redirecting').style.display = 'none';
-            document.getElementById('error').style.display = 'block';
-            document.getElementById('error').innerHTML = 
-              `<h3>No calendar found for campus: ${campusLocation || 'Unknown'}</h3>
-               <p>Please make sure your campus location matches one of the following:</p>
-               <ul>${Object.keys(data.locations).map(loc => `<li>${loc}</li>`).join('')}</ul>`;
-          }
         }
+        
+        // If we're here, we didn't find a match
+        document.getElementById('status').textContent = 
+          `No calendar found for campus: ${campusLocation || 'Unknown'}`;
+        document.getElementById('error-details').style.display = 'block';
       } catch (error) {
         console.error('Error:', error);
-        document.getElementById('redirecting').style.display = 'none';
-        document.getElementById('error').style.display = 'block';
-        document.getElementById('error').innerHTML = 
-          `<h3>Error loading calendar information:</h3>
-           <p>${error.message}</p>`;
+        document.getElementById('status').textContent = 'Error loading calendar information';
+        document.getElementById('debug-info').innerHTML += 
+          `<p><strong>Error:</strong> ${error.message}</p>`;
       }
     }
 
-    // Run the redirect function when page loads
+    // Run when page loads
     window.onload = redirectToCalendar;
   </script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
       line-height: 1.6;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
     }
-    #debug {
-      background-color: #f8f8f8;
-      padding: 10px;
-      border: 1px solid #ddd;
+    #status {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    #debug-info {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
       margin-top: 20px;
       font-family: monospace;
     }
-    #error {
+    #error-details {
       display: none;
-      color: #d32f2f;
-    }
-    ul {
-      margin-top: 5px;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #fff9e6;
+      border-left: 4px solid #ffc107;
     }
   </style>
 </head>
 <body>
-  <div id="redirecting">
-    <h3>Redirecting to campus calendar...</h3>
-    <p>Please wait while we find the right calendar for your campus.</p>
+  <h2 id="status">Checking campus calendar...</h2>
+  
+  <div id="error-details">
+    <p>The campus location doesn't match any of our calendar entries. Please check that your location is correctly formatted.</p>
+    <p>If this issue persists, please contact IT support.</p>
   </div>
-  <div id="error"></div>
-  <div id="debug"></div>
+  
+  <div id="debug-info">
+    <p><strong>Debug information will appear here...</strong></p>
+  </div>
 </body>
 </html>
