@@ -5,9 +5,9 @@
       "title": "Campus Calendar",
       "properties": [
         {
-          "label": "Campus Location",
+          "label": "Campus",
           "dataType": "STRING",
-          "value": "${properties.campus_location_ca}"
+          "value": "View calendar for your campus"
         }
       ],
       "actions": [
@@ -15,7 +15,7 @@
           "type": "IFRAME",
           "width": 890,
           "height": 748,
-          "uri": "https://collectivacademyadmin.github.io/hubspot-campus-calendars/campus-selector.html",
+          "uri": "https://collectivacademyadmin.github.io/hubspot-campus-calendars/redirect.html?associatedObjectId=${associatedObjectId}&portalId=${portalId}",
           "label": "View Calendar"
         }
       ]
