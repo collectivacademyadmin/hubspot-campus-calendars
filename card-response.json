@@ -15,7 +15,7 @@
           "type": "IFRAME",
           "width": 890,
           "height": 748,
-          "uri": "https://collectivacademyadmin.github.io/hubspot-campus-calendars/redirect.html?campus=${properties.campus_location_ca}",
+          "uri": "https://YOUR-GITHUB-USERNAME.github.io/hubspot-campus-calendars/redirect.html?campus=${properties.campus_location_ca}",
           "label": "View Calendar"
         }
       ]
