@@ -3,40 +3,59 @@
 <head>
   <title>Redirecting to Campus Calendar</title>
   <script>
-    // Function to get URL parameters
-    function getParameterByName(name) {
-      const url = window.location.href;
-      name = name.replace(/[\[\]]/g, '\\$&');
-      const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-          results = regex.exec(url);
-      if (!results) return null;
-      if (!results[2]) return '';
-      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    // Function to get all URL parameters
+    function getUrlParams() {
+      const params = {};
+      window.location.search.substr(1).split('&').forEach(item => {
+        const [key, value] = item.split('=');
+        params[key] = decodeURIComponent(value);
+      });
+      return params;
     }
 
     // Main function to handle redirection
     async function redirectToCalendar() {
       try {
-        // Get campus location from URL parameter
-        const campusLocation = getParameterByName('campus');
+        // Get all URL parameters
+        const params = getUrlParams();
+        
+        // Extract campus location (it might be in different formats)
+        let campusLocation = params.campus;
+        
+        // If it's not directly in the URL, we'll extract it from the original query
+        if (!campusLocation && window.location.href.includes('campus_location_ca=')) {
+          // Extract from the format we see in your URL
+          const match = window.location.href.match(/campus_location_ca=([^&]+)/);
+          if (match) {
+            campusLocation = decodeURIComponent(match[1].replace(/\+/g, ' '));
+          }
+        }
         
         // Fetch the JSON mapping file
-        const response = await fetch('https://raw.githubusercontent.com/collectivacademyadmin/hubspot-campus-calendars/main/campus-calendars.json');
+        const response = await fetch('https://collectivacademyadmin.github.io/hubspot-campus-calendars/campus-calendars.json');
         const data = await response.json();
         
-        // Look up the calendar link for this campus
-        let calendarLink = '';
+        // Log information for debugging
+        console.log("Campus detected:", campusLocation);
+        console.log("Available locations:", Object.keys(data.locations));
         
+        // Look up the calendar link for this campus
         if (campusLocation && data.locations[campusLocation]) {
-          calendarLink = data.locations[campusLocation].link;
+          const calendarLink = data.locations[campusLocation].link;
+          document.body.innerHTML = '<h3>Redirecting to ' + data.locations[campusLocation].name + '...</h3>';
+          
           // Redirect to the calendar
           window.open(calendarLink, '_blank');
-          // Close the iframe
-          window.parent.postMessage(JSON.stringify({ "action": "DONE" }), "*");
+          
+          // Close the iframe after 2 seconds
+          setTimeout(function() {
+            window.parent.postMessage(JSON.stringify({ "action": "DONE" }), "*");
+          }, 2000);
         } else {
           // Default calendar or error message
-          document.body.innerHTML = '<h3>No calendar found for campus: ' + (campusLocation || 'Unknown') + '</h3>';
-          return;
+          document.body.innerHTML = '<h3>No calendar found for campus: ' + (campusLocation || 'Unknown') + '</h3>' +
+                                   '<p>Please make sure your campus location matches one of the following:</p>' +
+                                   '<ul>' + Object.keys(data.locations).map(loc => `<li>${loc}</li>`).join('') + '</ul>';
         }
       } catch (error) {
         console.error('Error:', error);
