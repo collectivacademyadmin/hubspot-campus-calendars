@@ -7,7 +7,7 @@
         {
           "label": "Campus",
           "dataType": "STRING",
-          "value": "View calendar for your campus"
+          "value": "Click to view your campus calendar"
         }
       ],
       "actions": [
@@ -15,10 +15,11 @@
           "type": "IFRAME",
           "width": 890,
           "height": 748,
-          "uri": "https://collectivacademyadmin.github.io/hubspot-campus-calendars/redirect.html?associatedObjectId=${associatedObjectId}&portalId=${portalId}",
+          "uri": "https://collectivacademyadmin.github.io/hubspot-campus-calendars/redirect.html",
           "label": "View Calendar"
         }
       ]
     }
   ]
 }
+
