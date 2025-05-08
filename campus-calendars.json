@@ -1,0 +1,28 @@
+{
+  "locations": {
+    "Braintree, MA": {
+      "name": "Braintree, MA Tours",
+      "link": "https://calendar.google.com/calendar/u/0?cid=Y19kMzdjNDlmNjhlNTg3OWNiMDI2NWIyN2RhNzU5NGE3YWVlNDQ4MzgxN2Y3YmFjMDY0YjU0ZTU1OTdhYTliMmZmQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    },
+    "Dallas, TX": {
+      "name": "Dallas, TX Tours",
+      "link": "https://calendar.google.com/calendar/u/0?cid=Y182ZDc4ZTZkODdlZWRhOGU4ZTA0OTY4MjUwNzQzMTM5NWM2ZTBiNTcwNzRlOTY1Y2NjZjAwYzBiMDZkZmZhZGIzQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    },
+    "Worcester, MA": {
+      "name": "Worcester, MA Tours",
+      "link": "https://calendar.google.com/calendar/u/0?cid=Y19hOGJiMjIwZWQ1NDhiZDY1ZmQ0MzE4NDBjYjExMTllMWQ2ZGZiMTBmNzkyZTcyYjM1YTBhMTQ0MDk4N2U5NDFhQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    },
+    "Cranston, RI": {
+      "name": "Cranston, RI Tours",
+      "link": "https://calendar.google.com/calendar/u/0?cid=Y180OWU1MGY4MDRmOTQ3YThmY2JlOWM1ODc5MDUyMWVmMzk0OTA2MmY2OThjMWNiOTJlM2M3YzZhN2ZiZTQyZTIyQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    },
+    "Fort Worth, TX": {
+      "name": "Fort Worth, TX Tours",
+      "link": "https://calendar.google.com/calendar/u/0?cid=Y19iZTFlMTc3MDAwMWZjZjkyY2M5NzgyMzhmODRlMWI1Yzk3NWFmMzM0ODA3NmVlNTkyZjg1ZjE1MGY1NWY2OTEzQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    },
+    "Sandy, UT": {
+      "name": "Sandy, UT Tours",
+      "link": "https://calendar.google.com/calendar/u/0?cid=Y19kMDdkNjQ3NjM0ZmM1NzM0M2NjYmRjMWE3ZWZkOTliODEzMjFlNzliNDQxYTZmOWZjMDIwZGEwNzk3ZTJlZTM2QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    }
+  }
+}
